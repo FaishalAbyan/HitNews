@@ -8,7 +8,8 @@ import 'package:tekmob_hitnews/presentation/home/widgets/news_list_item.dart';
 import 'package:tekmob_hitnews/presentation/providers/news_provider.dart';
 import 'package:tekmob_hitnews/presentation/news/pages/news_detail_page.dart';
 import 'package:tekmob_hitnews/presentation/notifications/pages/notification_page.dart';
-import 'package:flutter_staggered_animations/flutter_staggered_animations.dart'; // Import animasi
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
+import 'package:tekmob_hitnews/presentation/common/loading_indicator.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -92,8 +93,8 @@ class _HomePageState extends State<HomePage> {
                       borderRadius: BorderRadius.circular(8.0),
                       child: Image.asset(
                         'assets/images/app_logo.png',
-                        height: 60,
-                        width: 60,
+                        height: 40,
+                        width: 40,
                         fit: BoxFit.cover,
                         errorBuilder:
                             (context, error, stackTrace) => Container(
@@ -238,11 +239,7 @@ class _HomePageState extends State<HomePage> {
               child: Consumer<NewsProvider>(
                 builder: (context, newsProvider, child) {
                   if (newsProvider.status == NewsStatus.loading) {
-                    return const Center(
-                      child: CircularProgressIndicator(
-                        color: AppColors.primaryColor,
-                      ),
-                    );
+                    return const LoadingIndicator(); // Menggunakan LoadingIndicator
                   } else if (newsProvider.status == NewsStatus.error) {
                     return Center(
                       child: Text(
@@ -265,22 +262,16 @@ class _HomePageState extends State<HomePage> {
                     );
                   } else {
                     return AnimationLimiter(
-                      // Tambahkan AnimationLimiter
                       child: ListView.builder(
                         itemCount: newsProvider.articles.length,
                         itemBuilder: (context, index) {
                           final article = newsProvider.articles[index];
                           return AnimationConfiguration.staggeredList(
-                            // Konfigurasi animasi
                             position: index,
-                            duration: const Duration(
-                              milliseconds: 375,
-                            ), // Durasi per item
+                            duration: const Duration(milliseconds: 375),
                             child: SlideAnimation(
-                              // Efek slide
                               verticalOffset: 50.0,
                               child: FadeInAnimation(
-                                // Efek fade
                                 child: NewsListItem(
                                   article: article,
                                   onTap: () {

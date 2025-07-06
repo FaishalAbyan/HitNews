@@ -5,6 +5,8 @@ import 'package:tekmob_hitnews/core/themes/app_text_styles.dart';
 import 'package:tekmob_hitnews/presentation/home/widgets/news_list_item.dart';
 import 'package:tekmob_hitnews/presentation/news/pages/news_detail_page.dart';
 import 'package:tekmob_hitnews/presentation/providers/news_provider.dart';
+import 'package:tekmob_hitnews/presentation/common/loading_indicator.dart';
+import 'package:tekmob_hitnews/core/routes/custom_page_route.dart';
 
 class SearchPage extends StatefulWidget {
   const SearchPage({super.key});
@@ -63,8 +65,7 @@ class _SearchPageState extends State<SearchPage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor:
-          Theme.of(context).scaffoldBackgroundColor, // Warna dinamis
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: const Text('Pencarian'),
         centerTitle: true,
@@ -84,14 +85,14 @@ class _SearchPageState extends State<SearchPage>
                     prefixIcon: Icon(
                       Icons.search,
                       color: Theme.of(context).iconTheme.color,
-                    ), // Warna dinamis
+                    ),
                     suffixIcon:
                         _searchController.text.isNotEmpty
                             ? IconButton(
                               icon: Icon(
                                 Icons.clear,
                                 color: Theme.of(context).iconTheme.color,
-                              ), // Warna dinamis
+                              ),
                               onPressed: () {
                                 _searchController.clear();
                                 _performNewsSearch('');
@@ -99,13 +100,8 @@ class _SearchPageState extends State<SearchPage>
                               },
                             )
                             : null,
-                    fillColor:
-                        Theme.of(
-                          context,
-                        ).inputDecorationTheme.fillColor, // Warna dinamis
-                    hintStyle: AppTextStyles.getHintTextStyle(
-                      context,
-                    ), // Warna dinamis
+                    fillColor: Theme.of(context).inputDecorationTheme.fillColor,
+                    hintStyle: AppTextStyles.getHintTextStyle(context),
                   ),
                   onFieldSubmitted: (query) {
                     if (_tabController.index == 0) {
@@ -127,13 +123,12 @@ class _SearchPageState extends State<SearchPage>
                   labelStyle: AppTextStyles.titleMedium.copyWith(
                     fontWeight: FontWeight.bold,
                     color: Theme.of(context).textTheme.titleMedium?.color,
-                  ), // Warna dinamis
+                  ),
                   unselectedLabelStyle: AppTextStyles.titleMedium.copyWith(
                     color: Theme.of(context).textTheme.titleMedium?.color,
-                  ), // Warna dinamis
+                  ),
                   labelColor: AppColors.primaryColor,
-                  unselectedLabelColor:
-                      Theme.of(context).unselectedWidgetColor, // Warna dinamis
+                  unselectedLabelColor: Theme.of(context).unselectedWidgetColor,
                   indicatorColor: AppColors.primaryColor,
                   indicatorWeight: 3.0,
                   indicatorSize: TabBarIndicatorSize.tab,
@@ -149,11 +144,7 @@ class _SearchPageState extends State<SearchPage>
           Consumer<NewsProvider>(
             builder: (context, newsProvider, child) {
               if (newsProvider.status == NewsStatus.loading) {
-                return const Center(
-                  child: CircularProgressIndicator(
-                    color: AppColors.primaryColor,
-                  ),
-                );
+                return const LoadingIndicator(); // Menggunakan LoadingIndicator
               } else if (newsProvider.status == NewsStatus.error) {
                 return Center(
                   child: Padding(
@@ -174,7 +165,7 @@ class _SearchPageState extends State<SearchPage>
                     'Tidak ada berita ditemukan untuk "${_searchController.text}".',
                     style: AppTextStyles.bodyLarge.copyWith(
                       color: Theme.of(context).textTheme.bodyLarge?.color,
-                    ), // Warna dinamis
+                    ),
                     textAlign: TextAlign.center,
                   ),
                 );
@@ -185,7 +176,7 @@ class _SearchPageState extends State<SearchPage>
                     'Masukkan kata kunci untuk mencari berita.',
                     style: AppTextStyles.bodyLarge.copyWith(
                       color: Theme.of(context).textTheme.bodyLarge?.color,
-                    ), // Warna dinamis
+                    ),
                     textAlign: TextAlign.center,
                   ),
                 );
@@ -200,9 +191,8 @@ class _SearchPageState extends State<SearchPage>
                       onTap: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(
-                            builder:
-                                (context) => NewsDetailPage(article: article),
+                          CustomPageRoute(
+                            child: NewsDetailPage(article: article),
                           ),
                         );
                       },
@@ -223,7 +213,7 @@ class _SearchPageState extends State<SearchPage>
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12.0),
                 ),
-                color: Theme.of(context).cardColor, // Warna dinamis
+                color: Theme.of(context).cardColor,
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Row(
@@ -239,7 +229,7 @@ class _SearchPageState extends State<SearchPage>
                                   Theme.of(
                                     context,
                                   ).textTheme.titleMedium?.color,
-                            ), // Warna dinamis
+                            ),
                           ),
                           const SizedBox(height: 4),
                           Text(
@@ -247,7 +237,7 @@ class _SearchPageState extends State<SearchPage>
                             style: AppTextStyles.bodySmall.copyWith(
                               color:
                                   Theme.of(context).textTheme.bodySmall?.color,
-                            ), // Warna dinamis
+                            ),
                           ),
                         ],
                       ),
@@ -285,7 +275,7 @@ class _SearchPageState extends State<SearchPage>
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12.0),
                 ),
-                color: Theme.of(context).cardColor, // Warna dinamis
+                color: Theme.of(context).cardColor,
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Row(
@@ -301,7 +291,7 @@ class _SearchPageState extends State<SearchPage>
                                   Theme.of(
                                     context,
                                   ).textTheme.titleMedium?.color,
-                            ), // Warna dinamis
+                            ),
                           ),
                           const SizedBox(height: 4),
                           Text(
@@ -309,7 +299,7 @@ class _SearchPageState extends State<SearchPage>
                             style: AppTextStyles.bodySmall.copyWith(
                               color:
                                   Theme.of(context).textTheme.bodySmall?.color,
-                            ), // Warna dinamis
+                            ),
                           ),
                         ],
                       ),
@@ -320,9 +310,7 @@ class _SearchPageState extends State<SearchPage>
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.accentColor,
                           foregroundColor:
-                              Theme.of(
-                                context,
-                              ).textTheme.bodyLarge?.color, // Warna dinamis
+                              Theme.of(context).textTheme.bodyLarge?.color,
                           padding: const EdgeInsets.symmetric(
                             horizontal: 16,
                             vertical: 8,

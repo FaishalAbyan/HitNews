@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:tekmob_hitnews/core/themes/app_colors.dart';
 import 'package:tekmob_hitnews/core/themes/app_text_styles.dart';
 import 'package:tekmob_hitnews/core/routes/custom_page_route.dart';
 import 'package:tekmob_hitnews/presentation/auth/pages/login_page.dart';
 import 'package:tekmob_hitnews/presentation/main_wrapper_page.dart';
-import 'package:tekmob_hitnews/presentation/auth/widgets/auth_form_field.dart'; // Import AuthFormField
-import 'package:tekmob_hitnews/presentation/auth/widgets/social_login_buttons.dart'; // Import SocialLoginButton
+import 'package:tekmob_hitnews/presentation/auth/widgets/auth_form_field.dart';
+import 'package:tekmob_hitnews/presentation/auth/widgets/social_login_buttons.dart'; // Import kembali SocialLoginButton
+import 'package:tekmob_hitnews/presentation/providers/auth_provider.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});
@@ -32,7 +34,7 @@ class _SignUpPageState extends State<SignUpPage> {
     super.dispose();
   }
 
-  void _signUp() {
+  void _signUp() async {
     if (_passwordController.text != _confirmPasswordController.text) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -43,13 +45,21 @@ class _SignUpPageState extends State<SignUpPage> {
       return;
     }
 
-    print('Full Name: ${_fullNameController.text}');
-    print('Email: ${_emailController.text}');
-    print('Password: ${_passwordController.text}');
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    await authProvider.signUp(_emailController.text, _passwordController.text);
 
-    Navigator.of(
-      context,
-    ).pushReplacement(CustomPageRoute(child: const MainWrapperPage()));
+    if (authProvider.status == AuthStatus.authenticated) {
+      Navigator.of(
+        context,
+      ).pushReplacement(CustomPageRoute(child: const MainWrapperPage()));
+    } else if (authProvider.status == AuthStatus.error) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(authProvider.errorMessage),
+          backgroundColor: AppColors.errorColor,
+        ),
+      );
+    }
   }
 
   @override
@@ -77,7 +87,6 @@ class _SignUpPageState extends State<SignUpPage> {
                 ),
               ),
               const SizedBox(height: 40),
-              // Menggunakan AuthFormField
               AuthFormField(
                 controller: _fullNameController,
                 labelText: 'Full Name',
@@ -86,7 +95,6 @@ class _SignUpPageState extends State<SignUpPage> {
                 keyboardType: TextInputType.name,
               ),
               const SizedBox(height: 20),
-              // Menggunakan AuthFormField
               AuthFormField(
                 controller: _emailController,
                 labelText: 'Email Address',
@@ -95,7 +103,6 @@ class _SignUpPageState extends State<SignUpPage> {
                 keyboardType: TextInputType.emailAddress,
               ),
               const SizedBox(height: 20),
-              // Menggunakan AuthFormField untuk password
               AuthFormField(
                 controller: _passwordController,
                 labelText: 'Password',
@@ -115,7 +122,6 @@ class _SignUpPageState extends State<SignUpPage> {
                 ),
               ),
               const SizedBox(height: 20),
-              // Menggunakan AuthFormField untuk confirm password
               AuthFormField(
                 controller: _confirmPasswordController,
                 labelText: 'Confirm Password',
@@ -139,12 +145,29 @@ class _SignUpPageState extends State<SignUpPage> {
               const SizedBox(height: 30),
               SizedBox(
                 width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: _signUp,
-                  child: const Text('Sign Up'),
+                child: Consumer<AuthProvider>(
+                  builder: (context, authProvider, child) {
+                    return ElevatedButton(
+                      onPressed:
+                          authProvider.status == AuthStatus.loading
+                              ? null
+                              : _signUp,
+                      child:
+                          authProvider.status == AuthStatus.loading
+                              ? const SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(
+                                  color: AppColors.whiteColor,
+                                  strokeWidth: 2,
+                                ),
+                              )
+                              : const Text('Sign Up'),
+                    );
+                  },
                 ),
               ),
-              const SizedBox(height: 30),
+              const SizedBox(height: 30), // Mengembalikan SizedBox
               Row(
                 children: [
                   Expanded(
@@ -164,24 +187,36 @@ class _SignUpPageState extends State<SignUpPage> {
                   ),
                 ],
               ),
-              const SizedBox(height: 30),
+              const SizedBox(height: 30), // Mengembalikan SizedBox
               Row(
                 children: [
-                  // Menggunakan SocialLoginButton
                   SocialLoginButton(
                     imagePath: 'assets/images/google.png',
                     text: 'Google',
                     onPressed: () {
-                      print('Sign Up with Google');
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text(
+                            'Pendaftaran dengan Google belum tersedia.',
+                          ),
+                          backgroundColor: AppColors.primaryColor,
+                        ),
+                      );
                     },
                   ),
-                  const SizedBox(width: 30),
-                  // Menggunakan SocialLoginButton
+                  const SizedBox(width: 20),
                   SocialLoginButton(
                     imagePath: 'assets/images/facebook.png',
                     text: 'Facebook',
                     onPressed: () {
-                      print('Sign Up with Facebook');
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: const Text(
+                            'Pendaftaran dengan Facebook belum tersedia.',
+                          ),
+                          backgroundColor: AppColors.primaryColor,
+                        ),
+                      );
                     },
                   ),
                 ],
